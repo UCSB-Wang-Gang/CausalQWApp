@@ -7,11 +7,13 @@ function App() {
   const [cause, setCause] = useState('cause');
   const [effect, setEffect] = useState('effect');
   const [question, setQuestion] = useState('question');
+	const [passage, setPassage] = useState('passage');
 
   const handleError = () => {
     setCause('Error retrieving next hit (maybe DB empty?)');
     setEffect('Error retrieving next hit (maybe DB empty?)');
     setQuestion('Error retrieving next hit (maybe DB empty?)');
+		setPassage('Error retrieving next hit (maybe DB empty?)');
   }
 
   const getHit = () => {
@@ -26,6 +28,17 @@ function App() {
         setCause(r.hit.cause);
         setEffect(r.hit.effect);
         setQuestion(r.hit.question);
+
+				const c_patterns = ['because', 'due to', 'therefore', 'consequently', 'result'];
+				const passage = r.hit.passage;
+				let final_passage = passage;
+				for(var i = 0; i < c_patterns.length; i++) {
+					if(passage.includes(c_patterns[i])) {
+						var highlight = "<span style='background-color:#FFFF00'>" + c_patterns[i] + "</span>";
+						final_passage = final_passage.replace(c_patterns[i], highlight);
+					}
+				}
+				setPassage(final_passage);
       })
       .catch(() => handleError());
   }
@@ -75,7 +88,9 @@ function App() {
           <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{cause}</Typography>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Effect:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
+          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Passage:</Typography>
+          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: passage}}></Typography>
+					<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '5vh' }}>{question}</Typography>
           {/* <TextField
             id="textfield"
