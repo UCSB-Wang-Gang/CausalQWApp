@@ -8,6 +8,7 @@ function App() {
   const [effect, setEffect] = useState('effect');
   const [question, setQuestion] = useState('question');
 	const [passage, setPassage] = useState('passage');
+	const [article, setArticle] = useState('article');
 
   const handleError = () => {
     setCause('Error retrieving next hit (maybe DB empty?)');
@@ -29,7 +30,7 @@ function App() {
         setEffect(r.hit.effect);
         setQuestion(r.hit.question);
 
-				const c_patterns = ['because', 'due to', 'therefore', 'consequently', 'result'];
+				const c_patterns = ['because', 'Because', 'due to', 'Due to', 'therefore', 'Therefore', 'consequently', 'Consequently', 'resulted in', 'Resulted in', 'Resulting in', 'resulting in', 'as a result', 'As a result'];
 				const passage = r.hit.passage;
 				let final_passage = passage;
 				for(var i = 0; i < c_patterns.length; i++) {
@@ -39,6 +40,10 @@ function App() {
 					}
 				}
 				setPassage(final_passage);
+
+				const article_url = "https://en.wikipedia.org/wiki/" + r.article.title;
+				const article_html = "<a href='" + article_url + "'>" + article_url+ "</a>";
+				setArticle(article_html);
       })
       .catch(() => handleError());
   }
@@ -84,12 +89,14 @@ function App() {
         <Box style={{ padding: '5vh' }}>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
           <Typography variant="body1" id="hitid" component="p" style={{ marginBottom: '0.5em' }}>{hitId}</Typography>
+          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Article:</Typography>
+          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: article}}></Typography>
+          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Passage:</Typography>
+          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: passage}}></Typography>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Cause:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{cause}</Typography>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Effect:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Passage:</Typography>
-          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: passage}}></Typography>
 					<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '5vh' }}>{question}</Typography>
           {/* <TextField
