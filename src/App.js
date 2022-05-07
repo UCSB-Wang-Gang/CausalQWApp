@@ -1,4 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 import { useEffect, useState } from 'react';
 import './App.css';
 
@@ -9,6 +11,7 @@ function App() {
   const [question, setQuestion] = useState('question');
 	const [passage, setPassage] = useState('passage');
 	const [article, setArticle] = useState('article');
+	const [worker_id, setWorkerId] = useState('worker_id');
 
   const handleError = () => {
     setCause('Error retrieving next hit (maybe DB empty?)');
@@ -29,6 +32,7 @@ function App() {
         setCause(r.hit.cause);
         setEffect(r.hit.effect);
         setQuestion(r.hit.question);
+				setWorkerId("WORKER_ID");
 
 				const c_patterns = ['because', 'Because', 'due to', 'Due to', 'therefore', 'Therefore', 'consequently', 'Consequently', 'resulted in', 'Resulted in', 'Resulting in', 'resulting in', 'as a result', 'As a result'];
 				const passage = r.hit.passage;
@@ -63,53 +67,95 @@ function App() {
     }
   }
 
+	const getWorkerInfo = () => {
+		var endpoint = 'https://the.mturk.monster:50000/api/check_worker_info/' + worker_id;
+		fetch(endpoint)
+			.then(r => r.json())
+			.then(r => {
+
+			})
+			.catch(() => {});
+	}
+
+	const worker_stats = {
+		submits: 15,
+		checked_status: "checked",
+		bad_count: 5,
+	}
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
-    <Container>
-      <Box style={{ padding: '10vh' }}>
-        <Typography variant="h2" component="h1" style={{ textAlign: 'center' }}>
-          CausalQA Validation
-        </Typography>
+			<Container>
+				<Box style={{ padding: '10vh' }}>
+					<Typography variant="h2" component="h1" style={{ textAlign: 'center' }}>
+						CausalQA Validation
+					</Typography>
 
-        <div className="instructions">
-          <Typography variant="h5" component="h1" className='subtitle'>
-            Space = New Question
-          </Typography>
-          <Typography variant="h5" component="h1" className='subtitle'>
-            [ = Approve
-          </Typography>
-          <Typography variant="h5" component="h1" className='subtitle'>
-            ] = Reject
-          </Typography>
-        </div>
+					<div className="instructions">
+						<Typography variant="h5" component="h1" className='subtitle'>
+							Space = New Question
+						</Typography>
+						<Typography variant="h5" component="h1" className='subtitle'>
+							[ = Approve
+						</Typography>
+						<Typography variant="h5" component="h1" className='subtitle'>
+							] = Reject
+						</Typography>
+					</div>
 
-        <Box style={{ padding: '5vh' }}>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
-          <Typography variant="body1" id="hitid" component="p" style={{ marginBottom: '0.5em' }}>{hitId}</Typography>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Article:</Typography>
-          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: article}}></Typography>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Passage:</Typography>
-          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: passage}}></Typography>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Cause:</Typography>
-          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{cause}</Typography>
-          <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Effect:</Typography>
-          <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
-					<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
-          <Typography variant="body1" component="p" style={{ marginBottom: '5vh' }}>{question}</Typography>
-          {/* <TextField
-            id="textfield"
-            style={{ width: '100%' }}
-            value={reason}
-            onChange={handleReasonChange}
-            onKeyDown={handleKeyDown}>
-            {reason}
-          </TextField> */}
-        </Box>
-      </Box>
-    </Container>
+					<Row>
+						<Col>
+							<Typography variant="subtitle1" component="h1" className='subtitle'>
+								Worker Information
+							</Typography>
+								<table>
+									<tbody>
+										<tr>
+											<td>Submits</td>
+											<td>{worker_stats.submits}</td>
+										</tr>
+										<tr>
+											<td>Checked Status</td>
+											<td>{worker_stats.checked_status}</td>
+										</tr>
+										<tr>
+											<td>Bad Count</td>
+											<td>{worker_stats.bad_count}</td>
+										</tr>
+									</tbody>
+								</table>
+						</Col>
+						<Col>
+						<Box style={{ padding: '5vh' }}>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
+							<Typography variant="body1" id="hitid" component="p" style={{ marginBottom: '0.5em' }}>{hitId}</Typography>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Article:</Typography>
+							<Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: article}}></Typography>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Passage:</Typography>
+							<Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: passage}}></Typography>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Cause:</Typography>
+							<Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{cause}</Typography>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Effect:</Typography>
+							<Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
+							<Typography variant="body1" component="p" style={{ marginBottom: '5vh' }}>{question}</Typography>
+							{/* <TextField
+								id="textfield"
+								style={{ width: '100%' }}
+								value={reason}
+								onChange={handleReasonChange}
+								onKeyDown={handleKeyDown}>
+								{reason}
+							</TextField> */}
+						</Box>
+						</Col>
+					</Row>
+				</Box>
+			</Container>
+
   );
 }
 
