@@ -12,6 +12,11 @@ function App() {
 	const [passage, setPassage] = useState('passage');
 	const [article, setArticle] = useState('article');
 	const [worker_id, setWorkerId] = useState('worker_id');
+	const [worker_hits, setWorkerHits] = useState('worker_hits');
+	const [worker_status, setWorkerStatus] = useState('worker_status');
+	const [good_count, setGoodCount] = useState('good_count');
+	const [bad_count, setBadCount] = useState('bad_count');
+
 
   const handleError = () => {
     setCause('Error retrieving next hit (maybe DB empty?)');
@@ -21,7 +26,7 @@ function App() {
   }
 
   const getHit = () => {
-    fetch('https://the.mturk.monster:50000/api/get_hit/null')
+    fetch('https://the.mturk.monster:50000/api/get_hit/null/info')
       .then(r => r.json())
       .then(r => {
         if (r.error) {
@@ -48,6 +53,12 @@ function App() {
 				const article_url = "https://en.wikipedia.org/wiki/" + r.article.title;
 				const article_html = "<a href='" + article_url + "'>" + article_url+ "</a>";
 				setArticle(article_html);
+
+				{/* Worker Information */}
+				setWorkerHits(r.worker.hit_submits);
+				setWorkerStatus(r.worker.checked_status);
+				setBadCount(r.worker.bad_s1_count);
+				setGoodCount(r.worker.good_s1_count);
       })
       .catch(() => handleError());
   }
@@ -108,26 +119,13 @@ function App() {
 
 					<Row>
 						<Col>
-							<Typography variant="subtitle1" component="h1" className='subtitle'>
-								Worker Information
-							</Typography>
-								<table>
-									<tbody>
-										<tr>
-											<td>Submits</td>
-											<td>{worker_stats.submits}</td>
-										</tr>
-										<tr>
-											<td>Checked Status</td>
-											<td>{worker_stats.checked_status}</td>
-										</tr>
-										<tr>
-											<td>Bad Count</td>
-											<td>{worker_stats.bad_count}</td>
-										</tr>
-									</tbody>
-								</table>
+							<Box style={{ padding: '10vh' }}>
+								<Typography variant="h5" component="h1"> Worker Information </Typography>
+								<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
+							</Box>
 						</Col>
+					</Row>
+					<Row>
 						<Col>
 						<Box style={{ padding: '5vh' }}>
 							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
