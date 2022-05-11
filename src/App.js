@@ -3,33 +3,34 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useEffect, useState } from 'react';
 import './App.css';
+import {CustomButton} from './components/CustomButton'
 
 function App() {
   const [hitId, setHitId] = useState(-1);
   const [cause, setCause] = useState('cause');
   const [effect, setEffect] = useState('effect');
   const [question, setQuestion] = useState('question');
-	const [passage, setPassage] = useState('passage');
-	const [article, setArticle] = useState('article');
-	const [worker_id, setWorkerId] = useState('worker_id');
-	const [worker_hits, setWorkerHits] = useState('worker_hits');
-	const [worker_status, setWorkerStatus] = useState('worker_status');
-	const [good_count, setGoodCount] = useState('good_count');
-	const [bad_count, setBadCount] = useState('bad_count');
+  const [passage, setPassage] = useState('passage');
+  const [article, setArticle] = useState('article');
+  const [worker_id, setWorkerId] = useState('worker_id');
+  const [worker_hits, setWorkerHits] = useState('worker_hits');
+  const [worker_status, setWorkerStatus] = useState('worker_status');
+  const [good_count, setGoodCount] = useState('good_count');
+  const [bad_count, setBadCount] = useState('bad_count');
 
 
   const handleError = () => {
     setCause('Error retrieving next hit (maybe DB empty?)');
     setEffect('Error retrieving next hit (maybe DB empty?)');
     setQuestion('Error retrieving next hit (maybe DB empty?)');
-		setPassage('Error retrieving next hit (maybe DB empty?)');
+	setPassage('Error retrieving next hit (maybe DB empty?)');
   }
 
   const getHit = () => {
     fetch('https://the.mturk.monster:50000/api/get_hit/null/info')
       .then(r => r.json())
       .then(r => {
-        if (r.error) {
+		if (r.error) {
           handleError();
         }
 
@@ -37,28 +38,28 @@ function App() {
         setCause(r.hit.cause);
         setEffect(r.hit.effect);
         setQuestion(r.hit.question);
-				setWorkerId("WORKER_ID");
 
-				const c_patterns = ['because', 'Because', 'due to', 'Due to', 'therefore', 'Therefore', 'consequently', 'Consequently', 'resulted in', 'Resulted in', 'Resulting in', 'resulting in', 'as a result', 'As a result'];
-				const passage = r.hit.passage;
-				let final_passage = passage;
-				for(var i = 0; i < c_patterns.length; i++) {
-					if(passage.includes(c_patterns[i])) {
-						var highlight = "<span style='background-color:#FFFF00'>" + c_patterns[i] + "</span>";
-						final_passage = final_passage.replace(c_patterns[i], highlight);
-					}
-				}
-				setPassage(final_passage);
+		const c_patterns = ['because', 'Because', 'due to', 'Due to', 'therefore', 'Therefore', 'consequently', 'Consequently', 'resulted in', 'Resulted in', 'Resulting in', 'resulting in', 'as a result', 'As a result'];
+		const passage = r.hit.passage;
+		let final_passage = passage;
+		for(var i = 0; i < c_patterns.length; i++) {
+			if(passage.includes(c_patterns[i])) {
+				var highlight = "<span style='background-color:#FFFF00'>" + c_patterns[i] + "</span>";
+				final_passage = final_passage.replace(c_patterns[i], highlight);
+			}
+		}
+		setPassage(final_passage);
 
-				const article_url = "https://en.wikipedia.org/wiki/" + r.article.title;
-				const article_html = "<a href='" + article_url + "'>" + article_url+ "</a>";
-				setArticle(article_html);
+		const article_url = "https://en.wikipedia.org/wiki/" + r.article.title;
+		const article_html = "<a href='" + article_url + "'>" + article_url+ "</a>";
+		setArticle(article_html);
 
-				{/* Worker Information */}
-				setWorkerHits(r.worker.hit_submits);
-				setWorkerStatus(r.worker.checked_status);
-				setBadCount(r.worker.bad_s1_count);
-				setGoodCount(r.worker.good_s1_count);
+		{/* Worker Information */}
+		setWorkerHits(r.worker.hit_submits);
+		setWorkerStatus(r.worker.checked_status);
+		setBadCount(r.worker.bad_s1_count);
+		setGoodCount(r.worker.good_s1_count);
+		setWorkerId(r.worker.worker_id);
       })
       .catch(() => handleError());
   }
@@ -118,12 +119,11 @@ function App() {
 					</div>
 
 					<Row>
-						<Col>
-							<Box style={{ padding: '10vh' }}>
-								<Typography variant="h5" component="h1"> Worker Information </Typography>
-								<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
-							</Box>
-						</Col>
+						<Box style={{ padding: '10vh' }}>
+							<Typography variant="h5" component="h1"> Worker Information </Typography>
+							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
+							<CustomButton id={worker_id}/>
+						</Box>
 					</Row>
 					<Row>
 						<Col>
