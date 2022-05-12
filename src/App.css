@@ -11,3 +11,15 @@
     justify-content: space-evenly;
     flex-direction: row;
 }
+
+.textfield-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh 10vh 2vh 10vh;
+}
+
+.passage {
+    background-image: url('https://i.imgur.com/271IzUM.png');
+    background-size: 100% 100%;
+}
