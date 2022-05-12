@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container, Typography, TextField } from '@mui/material';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useEffect, useState } from 'react';
@@ -17,6 +17,7 @@ function App() {
   const [worker_status, setWorkerStatus] = useState('worker_status');
   const [good_count, setGoodCount] = useState('good_count');
   const [bad_count, setBadCount] = useState('bad_count');
+  const [name, setName] = useState('');
 
 
   const handleError = () => {
@@ -55,6 +56,12 @@ function App() {
 		setArticle(article_html);
 
 		{/* Worker Information */}
+		console.log(r.worker.hit_submits);
+		console.log(r.worker.checked_status);
+		console.log(r.worker.bad_s1_count);
+		console.log(r.worker.good_s1_count);
+		console.log(r.worker.worker_id);
+
 		setWorkerHits(r.worker.hit_submits);
 		setWorkerStatus(r.worker.checked_status);
 		setBadCount(r.worker.bad_s1_count);
@@ -65,8 +72,15 @@ function App() {
   }
 
   const handleSubmit = (r) => {
-    fetch(`https://the.mturk.monster:50000/api/eval_hit/${document.getElementById("hitid").textContent}/${r}`, { method: 'POST' });
-    getHit();
+	console.log(name);
+	if(name){
+		console.log(name);
+		fetch(`https://the.mturk.monster:50000/api/eval_hit/${document.getElementById("hitid").textContent}/${r}`, 
+		{ method: 'POST', body: '' });
+		getHit();
+	}else{
+		alert('Please enter your name!')
+	}
   }
 
   const handleKeyDown = (e) => {
@@ -118,12 +132,22 @@ function App() {
 						</Typography>
 					</div>
 
+						<TextField
+							onChange={(e) => {
+								console.log(e.target.value);
+								setName(e.target.value)}
+							}
+							label="Name"
+							variant='outlined'
+							color='primary'
+							fullWidth
+							required
+							style={{marginTop: '50px', marginBottom: '50px'}}
+						/>
+
 					<Row>
-						<Box style={{ padding: '10vh' }}>
-							<Typography variant="h5" component="h1"> Worker Information </Typography>
-							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
-							<CustomButton id={worker_id}/>
-						</Box>
+						<Typography variant="h5" component="h1" style={{textAlign: 'center' }}> Worker Information </Typography>
+						<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
 					</Row>
 					<Row>
 						<Col>
@@ -140,6 +164,7 @@ function App() {
 							<Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
 							<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
 							<Typography variant="body1" component="p" style={{ marginBottom: '5vh' }}>{question}</Typography>
+							<CustomButton id={worker_id}/>
 							{/* <TextField
 								id="textfield"
 								style={{ width: '100%' }}
