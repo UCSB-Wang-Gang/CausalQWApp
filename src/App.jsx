@@ -1,6 +1,7 @@
 import {
-  Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography, Switch, FormControlLabel,
+  Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography,
 } from '@mui/material';
+import SpaceBarIcon from '@mui/icons-material/SpaceBar';
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { MarkAllBtns } from './components/MarkAllBtns';
@@ -21,9 +22,6 @@ function App() {
   const [good_count, setGoodCount] = useState('good_count');
   const [bad_count, setBadCount] = useState('bad_count');
 
-  // const [topUnmarked, setTopUnmarked] = useState(false);
-  const useAltGetHit = useRef(false);
-
   const inputRef = useRef();
 
   const handleError = () => {
@@ -36,8 +34,8 @@ function App() {
   // const endpoints = ['get_s1_ordered', 'get_hit/null/render_worker_stats'];
 
   const getHit = () => {
-    const endpoint = useAltGetHit.current.value ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats';
-    // fetch('https://the.mturk.monster:50000/api/get_hit/null/render_worker_stats')
+    const endpoint = 'get_s1_ordered';
+    // const endpoint = 'get_hit/null/render_worker_stats';
     fetch(`https://the.mturk.monster:50000/api/${endpoint}`)
       .then((r) => r.json())
       .then((r) => {
@@ -117,19 +115,19 @@ function App() {
           <Typography variant="h2" component="h1" style={{ textAlign: 'left', fontWeight: 'bold' }}>
             CausalQA Validation
           </Typography>
-
-          <FormControlLabel control={<Switch inputRef={useAltGetHit} />} label="top unmarked?" />
         </div>
 
         <div className="instructions">
           <Typography sx={{ fontFamily: 'Monospace' }} variant="h5" component="h1" className="subtitle">
-            Next: spacebar, Approve: [, Reject: ]
+            Next: <SpaceBarIcon />  &ensp; Approve: [ &ensp; Reject: ]
           </Typography>
 
           <Box className="textfield-box" style={{ width: '25%' }}>
             <TextField
               className="username"
               id="textfield"
+              label="username (no spaces or brackets)"
+              variant="outlined"
               style={{ width: '100%' }}
               placeholder="annotator username"
               inputRef={inputRef}
