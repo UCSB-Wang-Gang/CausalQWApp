@@ -21,7 +21,8 @@ function App() {
   const [good_count, setGoodCount] = useState('good_count');
   const [bad_count, setBadCount] = useState('bad_count');
 
-  const [topUnmarked, setTopUnmarked] = useState(false);
+  // const [topUnmarked, setTopUnmarked] = useState(false);
+  const useAltGetHit = useRef(false);
 
   const inputRef = useRef();
 
@@ -32,8 +33,10 @@ function App() {
     setPassage('Error retrieving next hit (maybe DB empty?)');
   };
 
+  // const endpoints = ['get_s1_ordered', 'get_hit/null/render_worker_stats'];
+
   const getHit = () => {
-    const endpoint = (topUnmarked ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats');
+    const endpoint = useAltGetHit.current.value ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats';
     // fetch('https://the.mturk.monster:50000/api/get_hit/null/render_worker_stats')
     fetch(`https://the.mturk.monster:50000/api/${endpoint}`)
       .then((r) => r.json())
@@ -115,7 +118,7 @@ function App() {
             CausalQA Validation
           </Typography>
 
-          <FormControlLabel control={<Switch onChange={() => setTopUnmarked(!topUnmarked)} />} label="top unmarked?" />
+          <FormControlLabel control={<Switch inputRef={useAltGetHit} />} label="top unmarked?" />
         </div>
 
         <div className="instructions">
