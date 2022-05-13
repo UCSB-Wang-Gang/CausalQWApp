@@ -20,10 +20,10 @@ export function MarkAllBtns(props) {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Stack spacing={4}>
         <Stack spacing={2} direction="row">
-          <Button variant="outlined" color="info" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'good')}>
+          <Button className="tony" variant="outlined" color="info" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'good')}>
             Approve all HITs by worker
           </Button>
-          <Button variant="outlined" color="error" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'bad')}>
+          <Button className="tony" variant="outlined" color="error" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'bad')}>
             Reject all HITs by worker
           </Button>
           <FormControlLabel control={<Switch onChange={() => setWorkerEval(!workerEval)} />} label="Safety Toggle" />
