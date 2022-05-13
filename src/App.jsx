@@ -1,7 +1,9 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography, Switch, FormControlLabel } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import {
+  Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography, Switch, FormControlLabel,
+} from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
-import { MarkAllBtns } from './MarkAllBtns.js'
+import { MarkAllBtns } from './components/MarkAllBtns';
 
 function App() {
   const [hitId, setHitId] = useState(-1);
@@ -13,7 +15,7 @@ function App() {
   const [expanded, setExpanded] = useState(false);
 
   const [worker_id, setWorkerId] = useState('worker_id');
-  const [mturkId, setMturkId] = useState('mturk_id');
+  const [mturk_id, setMturkId] = useState('mturk_id');
   const [worker_hits, setWorkerHits] = useState('worker_hits');
   const [worker_status, setWorkerStatus] = useState('worker_status');
   const [good_count, setGoodCount] = useState('good_count');
@@ -23,20 +25,19 @@ function App() {
 
   const inputRef = useRef();
 
-
   const handleError = () => {
     setCause('Error retrieving next hit (maybe DB empty?)');
     setEffect('Error retrieving next hit (maybe DB empty?)');
     setQuestion('Error retrieving next hit (maybe DB empty?)');
     setPassage('Error retrieving next hit (maybe DB empty?)');
-  }
+  };
 
   const getHit = () => {
-    let endpoint = (topUnmarked ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats');
+    const endpoint = (topUnmarked ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats');
     // fetch('https://the.mturk.monster:50000/api/get_hit/null/render_worker_stats')
     fetch(`https://the.mturk.monster:50000/api/${endpoint}`)
-      .then(r => r.json())
-      .then(r => {
+      .then((r) => r.json())
+      .then((r) => {
         if (r.error) {
           handleError();
         }
@@ -47,18 +48,18 @@ function App() {
         setQuestion(r.hit.question);
 
         const c_patterns = ['because', 'Because', 'due to', 'Due to', 'therefore', 'Therefore', 'consequently', 'Consequently', 'resulted in', 'Resulted in', 'Resulting in', 'resulting in', 'as a result', 'As a result'];
-        const passage = r.hit.passage;
-        let final_passage = passage;
-        for (var i = 0; i < c_patterns.length; i++) {
-          if (passage.includes(c_patterns[i])) {
-            var highlight = "<span style='background-color:#FFFF00'>" + c_patterns[i] + "</span>";
+        const { pass } = r.hit;
+        let final_passage = pass;
+        for (let i = 0; i < c_patterns.length; i++) {
+          if (pass.includes(c_patterns[i])) {
+            const highlight = `<span style='background-color:#FFFF00'>${c_patterns[i]}</span>`;
             final_passage = final_passage.replace(c_patterns[i], highlight);
           }
         }
         setPassage(final_passage);
 
-        const article_url = "https://en.wikipedia.org/wiki/" + r.article.title;
-        const article_html = "<a href='" + article_url + "'>" + article_url + "</a>";
+        const article_url = `https://en.wikipedia.org/wiki/${r.article.title}`;
+        const article_html = `<a href='${article_url}'>${article_url}</a>`;
         setArticle(article_html);
 
         setWorkerHits(r.worker.hit_submits);
@@ -71,11 +72,11 @@ function App() {
         // console.log("here?");
       })
       .catch(() => handleError());
-  }
-
+  };
 
   const handleSubmit = (r) => {
-    fetch(`https://the.mturk.monster:50000/api/eval_hit/${document.getElementById("hitid").textContent}/${r}`,
+    fetch(
+      `https://the.mturk.monster:50000/api/eval_hit/${document.getElementById('hitid').textContent}/${r}`,
       {
         method: 'POST',
         headers: {
@@ -83,23 +84,24 @@ function App() {
         },
         body: JSON.stringify({
           hit: {
-            validator_username: inputRef.current.value === "" ? 'guest' : inputRef.current.value,
-          }
-        })
-      })
+            validator_username: inputRef.current.value === '' ? 'guest' : inputRef.current.value,
+          },
+        }),
+      },
+    );
     getHit();
-  }
+  };
 
   const handleKeyDown = (e) => {
-    if (document.querySelector(".Mui-focused")) return;
-    if (e.key === " ") {
+    if (document.querySelector('.Mui-focused')) return;
+    if (e.key === ' ') {
       getHit();
     } else if (e.key === '[') {
-      handleSubmit("good");
+      handleSubmit('good');
     } else if (e.key === ']') {
-      handleSubmit("bad");
+      handleSubmit('bad');
     }
-  }
+  };
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -108,23 +110,22 @@ function App() {
   return (
     <Container>
       <Box style={{ padding: '5vh' }}>
-        <div style={{display: 'flex', alignContent: 'space-between', justifyContent: 'space-between'}}>
+        <div style={{ display: 'flex', alignContent: 'space-between', justifyContent: 'space-between' }}>
           <Typography variant="h2" component="h1" style={{ textAlign: 'left', fontWeight: 'bold' }}>
             CausalQA Validation
           </Typography>
 
-          <FormControlLabel control={<Switch onChange={() => setTopUnmarked(!topUnmarked)}/>} label="top unmarked?" />
+          <FormControlLabel control={<Switch onChange={() => setTopUnmarked(!topUnmarked)} />} label="top unmarked?" />
         </div>
 
         <div className="instructions">
-          <Typography sx={{ fontFamily: 'Monospace' }} variant="h5" component="h1" className='subtitle'>
+          <Typography sx={{ fontFamily: 'Monospace' }} variant="h5" component="h1" className="subtitle">
             Next: spacebar, Approve: [, Reject: ]
           </Typography>
 
-
-          <Box className='textfield-box' style= {{ width: "25%" }}>
+          <Box className="textfield-box" style={{ width: '25%' }}>
             <TextField
-              className='username'
+              className="username"
               id="textfield"
               style={{ width: '100%' }}
               placeholder="annotator username"
@@ -134,13 +135,33 @@ function App() {
         </div>
 
         <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em' }}>
-          <b>Worker {mturkId}:</b> &ensp; &ensp; &ensp; 
-          bump status: {worker_status} &ensp; &ensp; &ensp; 
-          total submits: {worker_hits} &ensp; &ensp; &ensp; 
-          num bad: {bad_count} &ensp; &ensp; &ensp; 
-          num good: {good_count}
+          <b>
+            Worker
+            {' '}
+            {mturk_id}
+            :
+          </b>
+          {' '}
+          &ensp; &ensp; &ensp;
+          bump status:
+          {' '}
+          {worker_status}
+          {' '}
+          &ensp; &ensp; &ensp;
+          total submits:
+          {' '}
+          {worker_hits}
+          {' '}
+          &ensp; &ensp; &ensp;
+          num bad:
+          {' '}
+          {bad_count}
+          {' '}
+          &ensp; &ensp; &ensp;
+          num good:
+          {' '}
+          {good_count}
         </Typography>
-
 
         <Box style={{ padding: '2vh' }}>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
@@ -153,7 +174,7 @@ function App() {
           <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '1em' }}>{question}</Typography>
-          <Accordion className={"passage"} style={{ marginBottom: '5vh' }} expanded={expanded} onClick={() => setExpanded(!expanded)}>
+          <Accordion className="passage" style={{ marginBottom: '5vh' }} expanded={expanded} onClick={() => setExpanded(!expanded)}>
             <AccordionSummary>
               <Typography variant="subtitle1" component="h1" style={{ fontWeight: 'bold' }}>Passage:</Typography>
             </AccordionSummary>
@@ -162,7 +183,7 @@ function App() {
             </AccordionDetails>
           </Accordion>
 
-          <MarkAllBtns mturkId={mturkId} workerId={worker_id} />
+          <MarkAllBtns mturkId={mturk_id} workerId={worker_id} />
 
         </Box>
       </Box>
