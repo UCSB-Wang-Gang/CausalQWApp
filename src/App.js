@@ -1,6 +1,9 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography } from '@mui/material';
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
+import {CustomButton} from './components/CustomButton'
 
 function App() {
   const [hitId, setHitId] = useState(-1);
@@ -9,8 +12,13 @@ function App() {
   const [question, setQuestion] = useState('question');
   const [passage, setPassage] = useState('passage');
   const [article, setArticle] = useState('article');
-  const [expanded, setExpanded] = useState(false);
 
+  const [worker_id, setWorkerId] = useState('worker_id');
+  const [worker_hits, setWorkerHits] = useState('worker_hits');
+  const [worker_status, setWorkerStatus] = useState('worker_status');
+  const [good_count, setGoodCount] = useState('good_count');
+  const [bad_count, setBadCount] = useState('bad_count');
+  const [expanded, setExpanded] = useState(false);
   const inputRef = useRef();
 
 
@@ -22,10 +30,10 @@ function App() {
   }
 
   const getHit = () => {
-    fetch('https://the.mturk.monster:50000/api/get_hit/null')
+    fetch('https://the.mturk.monster:50000/api/get_hit/null/info')
       .then(r => r.json())
       .then(r => {
-        if (r.error) {
+		if (r.error) {
           handleError();
         }
 
@@ -48,8 +56,21 @@ function App() {
         const article_url = "https://en.wikipedia.org/wiki/" + r.article.title;
         const article_html = "<a href='" + article_url + "'>" + article_url + "</a>";
         setArticle(article_html);
-      })
-      .catch(() => handleError());
+
+		{/* Worker Information */}
+		console.log(r.worker.hit_submits);
+		console.log(r.worker.checked_status);
+		console.log(r.worker.bad_s1_count);
+		console.log(r.worker.good_s1_count);
+		console.log(r.worker.worker_id);
+
+		setWorkerHits(r.worker.hit_submits);
+		setWorkerStatus(r.worker.checked_status);
+		setBadCount(r.worker.bad_s1_count);
+		setGoodCount(r.worker.good_s1_count);
+		setWorkerId(r.worker.worker_id);
+	})
+    .catch(() => handleError());
   }
 
   const handleSubmit = (r) => {
@@ -79,6 +100,22 @@ function App() {
     }
   }
 
+	const getWorkerInfo = () => {
+		var endpoint = 'https://the.mturk.monster:50000/api/check_worker_info/' + worker_id;
+		fetch(endpoint)
+			.then(r => r.json())
+			.then(r => {
+
+			})
+			.catch(() => {});
+	}
+
+	const worker_stats = {
+		submits: 15,
+		checked_status: "checked",
+		bad_count: 5,
+	}
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
   }, []);
@@ -101,7 +138,6 @@ function App() {
             ] = Reject
           </Typography>
         </div>
-
         <Box className='textfield-box'>
           <TextField
             className='username'
@@ -111,6 +147,9 @@ function App() {
             inputRef={inputRef}
           />
         </Box>
+
+		<Typography variant="h5" component="h1" style={{textAlign: 'center' }}> Worker Information </Typography>
+		<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
 
         <Box style={{ padding: '2vh' }}>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
@@ -132,6 +171,7 @@ function App() {
             </AccordionDetails>
           </Accordion>
         </Box>
+		<CustomButton id={worker_id}/>
       </Box>
     </Container>
   );
