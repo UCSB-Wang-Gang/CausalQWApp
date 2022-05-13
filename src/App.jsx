@@ -124,7 +124,7 @@ function App() {
 
           <Box className="textfield-box" style={{ width: '25%' }}>
             <TextField
-              className="username"
+              className="username tony"
               id="textfield"
               label="username (no spaces or brackets)"
               variant="outlined"
@@ -175,7 +175,7 @@ function App() {
           <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
           <Typography variant="body1" component="p" style={{ marginBottom: '1em' }}>{question}</Typography>
-          <Accordion className="passage" style={{ marginBottom: '5vh' }} expanded={expanded} onClick={() => setExpanded(!expanded)}>
+          <Accordion className="tony" style={{ marginBottom: '5vh' }} expanded={expanded} onClick={() => setExpanded(!expanded)}>
             <AccordionSummary>
               <Typography variant="subtitle1" component="h1" style={{ fontWeight: 'bold' }}>Passage:</Typography>
             </AccordionSummary>
