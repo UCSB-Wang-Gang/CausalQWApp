@@ -14,9 +14,6 @@ export function MarkAllBtns(props) {
       // reject all also blocks worker
       fetch(`https://the.mturk.monster:50000/api/update_checked_status/${wid}/blocked`);
     }
-
-    // reset lock
-    setWorkerEval(true);
   }
 
   return (
