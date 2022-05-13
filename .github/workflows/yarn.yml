@@ -25,6 +25,6 @@ jobs:
       uses: andstor/file-existence-action@v1
       with:
         files: "package-lock.json"
-    - name: File exists
+    - name: Check package-lock does not exist
       if: steps.check_files.outputs.files_exists == 'true'
       run: exit 1
