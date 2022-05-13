@@ -1,5 +1,4 @@
 .subtitle {
-    text-align: center;
     margin-bottom: 1em;
     display: flex;
     justify-content: center;
@@ -8,23 +7,11 @@
 
 .instructions {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     flex-direction: row;
+    width: 100%;
 }
 
-.table {
-  border: 2px solid black;
-  width: 800px;
-  height: 200px;
-}
-  
-.th {
-  border-bottom: 1px solid black;
-}
-  
-.td {
-  text-align: center;
-}
 .textfield-box {
     display: flex;
     justify-content: center;

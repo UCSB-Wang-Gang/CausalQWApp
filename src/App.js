@@ -1,9 +1,7 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography } from '@mui/material';
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Container, TextField, Typography, Switch, FormControlLabel } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
-import {CustomButton} from './components/CustomButton'
+import { MarkAllBtns } from './MarkAllBtns.js'
 
 function App() {
   const [hitId, setHitId] = useState(-1);
@@ -12,13 +10,17 @@ function App() {
   const [question, setQuestion] = useState('question');
   const [passage, setPassage] = useState('passage');
   const [article, setArticle] = useState('article');
+  const [expanded, setExpanded] = useState(false);
 
   const [worker_id, setWorkerId] = useState('worker_id');
+  const [mturkId, setMturkId] = useState('mturk_id');
   const [worker_hits, setWorkerHits] = useState('worker_hits');
   const [worker_status, setWorkerStatus] = useState('worker_status');
   const [good_count, setGoodCount] = useState('good_count');
   const [bad_count, setBadCount] = useState('bad_count');
-  const [expanded, setExpanded] = useState(false);
+
+  const [topUnmarked, setTopUnmarked] = useState(false);
+
   const inputRef = useRef();
 
 
@@ -30,10 +32,12 @@ function App() {
   }
 
   const getHit = () => {
-    fetch('https://the.mturk.monster:50000/api/get_hit/null/info')
+    let endpoint = (topUnmarked ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats');
+    // fetch('https://the.mturk.monster:50000/api/get_hit/null/render_worker_stats')
+    fetch(`https://the.mturk.monster:50000/api/${endpoint}`)
       .then(r => r.json())
       .then(r => {
-		if (r.error) {
+        if (r.error) {
           handleError();
         }
 
@@ -57,21 +61,18 @@ function App() {
         const article_html = "<a href='" + article_url + "'>" + article_url + "</a>";
         setArticle(article_html);
 
-		{/* Worker Information */}
-		console.log(r.worker.hit_submits);
-		console.log(r.worker.checked_status);
-		console.log(r.worker.bad_s1_count);
-		console.log(r.worker.good_s1_count);
-		console.log(r.worker.worker_id);
+        setWorkerHits(r.worker.hit_submits);
+        setWorkerStatus(r.worker.checked_status);
+        setBadCount(r.worker.bad_s1_count);
+        setGoodCount(r.worker.good_s1_count);
+        setWorkerId(r.worker.id);
+        setMturkId(r.worker.worker_id);
 
-		setWorkerHits(r.worker.hit_submits);
-		setWorkerStatus(r.worker.checked_status);
-		setBadCount(r.worker.bad_s1_count);
-		setGoodCount(r.worker.good_s1_count);
-		setWorkerId(r.worker.worker_id);
-	})
-    .catch(() => handleError());
+        // console.log("here?");
+      })
+      .catch(() => handleError());
   }
+
 
   const handleSubmit = (r) => {
     fetch(`https://the.mturk.monster:50000/api/eval_hit/${document.getElementById("hitid").textContent}/${r}`,
@@ -100,22 +101,6 @@ function App() {
     }
   }
 
-	const getWorkerInfo = () => {
-		var endpoint = 'https://the.mturk.monster:50000/api/check_worker_info/' + worker_id;
-		fetch(endpoint)
-			.then(r => r.json())
-			.then(r => {
-
-			})
-			.catch(() => {});
-	}
-
-	const worker_stats = {
-		submits: 15,
-		checked_status: "checked",
-		bad_count: 5,
-	}
-
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
   }, []);
@@ -123,33 +108,39 @@ function App() {
   return (
     <Container>
       <Box style={{ padding: '5vh' }}>
-        <Typography variant="h2" component="h1" style={{ textAlign: 'center' }}>
-          CausalQA Validation
-        </Typography>
+        <div style={{display: 'flex', alignContent: 'space-between', justifyContent: 'space-between'}}>
+          <Typography variant="h2" component="h1" style={{ textAlign: 'left', fontWeight: 'bold' }}>
+            CausalQA Validation
+          </Typography>
+
+          <FormControlLabel control={<Switch onChange={() => setTopUnmarked(!topUnmarked)}/>} label="top unmarked?" />
+        </div>
 
         <div className="instructions">
-          <Typography variant="h5" component="h1" className='subtitle'>
-            Space = New Question
+          <Typography sx={{ fontFamily: 'Monospace' }} variant="h5" component="h1" className='subtitle'>
+            Next: spacebar, Approve: [, Reject: ]
           </Typography>
-          <Typography variant="h5" component="h1" className='subtitle'>
-            [ = Approve
-          </Typography>
-          <Typography variant="h5" component="h1" className='subtitle'>
-            ] = Reject
-          </Typography>
-        </div>
-        <Box className='textfield-box'>
-          <TextField
-            className='username'
-            id="textfield"
-            style={{ width: '100%' }}
-            placeholder="username"
-            inputRef={inputRef}
-          />
-        </Box>
 
-		<Typography variant="h5" component="h1" style={{textAlign: 'center' }}> Worker Information </Typography>
-		<Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Total # of HITs submitted: {worker_hits} &ensp; &ensp; &ensp; Worker Status: {worker_status} &ensp; &ensp; &ensp; Bad HIT Count: {bad_count} &ensp; &ensp; &ensp; Good HIT Count: {good_count}</Typography>
+
+          <Box className='textfield-box' style= {{ width: "25%" }}>
+            <TextField
+              className='username'
+              id="textfield"
+              style={{ width: '100%' }}
+              placeholder="annotator username"
+              inputRef={inputRef}
+            />
+          </Box>
+        </div>
+
+        <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em' }}>
+          <b>Worker {mturkId}:</b> &ensp; &ensp; &ensp; 
+          bump status: {worker_status} &ensp; &ensp; &ensp; 
+          total submits: {worker_hits} &ensp; &ensp; &ensp; 
+          num bad: {bad_count} &ensp; &ensp; &ensp; 
+          num good: {good_count}
+        </Typography>
+
 
         <Box style={{ padding: '2vh' }}>
           <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>ID:</Typography>
@@ -170,8 +161,10 @@ function App() {
               <Typography variant="body1" component="p" dangerouslySetInnerHTML={{ __html: passage }} />
             </AccordionDetails>
           </Accordion>
+
+          <MarkAllBtns mturkId={mturkId} workerId={worker_id} />
+
         </Box>
-		<CustomButton id={worker_id}/>
       </Box>
     </Container>
   );
