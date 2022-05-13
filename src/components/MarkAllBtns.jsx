@@ -10,8 +10,10 @@ export function MarkAllBtns(props) {
     // alert(`Worker: ${id}, Action: ${action}`);
     fetch(`https://the.mturk.monster:50000/api/eval_all_s1_by/${id}/${action}`, { method: 'POST' });
 
-    // reject all also blocks worker
-    fetch(`https://the.mturk.monster:50000/api/update_checked_status/${wid}/blocked`);
+    if (action === 'bad') {
+        // reject all also blocks worker
+        fetch(`https://the.mturk.monster:50000/api/update_checked_status/${wid}/blocked`);
+    }
 
     // reset lock
     setWorkerEval(true);
