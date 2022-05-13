@@ -51,14 +51,14 @@ function App() {
         setQuestion(r.hit.question);
 
         const c_patterns = ['because', 'Because', 'due to', 'Due to', 'therefore', 'Therefore', 'consequently', 'Consequently', 'resulted in', 'Resulted in', 'Resulting in', 'resulting in', 'as a result', 'As a result'];
-        const { pass } = r.hit;
-        let final_passage = pass;
+        let final_passage = r.hit.passage;
         for (let i = 0; i < c_patterns.length; i++) {
-          if (pass.includes(c_patterns[i])) {
+          if (final_passage.includes(c_patterns[i])) {
             const highlight = `<span style='background-color:#FFFF00'>${c_patterns[i]}</span>`;
             final_passage = final_passage.replace(c_patterns[i], highlight);
           }
         }
+
         setPassage(final_passage);
 
         const article_url = `https://en.wikipedia.org/wiki/${r.article.title}`;
