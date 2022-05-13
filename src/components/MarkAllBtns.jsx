@@ -11,8 +11,8 @@ export function MarkAllBtns(props) {
     fetch(`https://the.mturk.monster:50000/api/eval_all_s1_by/${id}/${action}`, { method: 'POST' });
 
     if (action === 'bad') {
-        // reject all also blocks worker
-        fetch(`https://the.mturk.monster:50000/api/update_checked_status/${wid}/blocked`);
+      // reject all also blocks worker
+      fetch(`https://the.mturk.monster:50000/api/update_checked_status/${wid}/blocked`);
     }
 
     // reset lock
