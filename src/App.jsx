@@ -33,10 +33,10 @@ function App() {
     setPassage('Error retrieving next hit (maybe DB empty?)');
   };
 
-  // const endpoints = ['get_s1_ordered', 'get_hit/null/render_worker_stats']; 
+  // const endpoints = ['get_s1_ordered', 'get_hit/null/render_worker_stats'];
 
   const getHit = () => {
-    let endpoint = useAltGetHit.current.value ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats';
+    const endpoint = useAltGetHit.current.value ? 'get_s1_ordered' : 'get_hit/null/render_worker_stats';
     // fetch('https://the.mturk.monster:50000/api/get_hit/null/render_worker_stats')
     fetch(`https://the.mturk.monster:50000/api/${endpoint}`)
       .then((r) => r.json())
@@ -44,7 +44,6 @@ function App() {
         if (r.error) {
           handleError();
         }
-        console.log(r);
 
         setHitId(r.hit.id);
         setCause(r.hit.cause);
@@ -119,7 +118,7 @@ function App() {
             CausalQA Validation
           </Typography>
 
-          <FormControlLabel control={<Switch inputRef={useAltGetHit}/>} label="top unmarked?" />
+          <FormControlLabel control={<Switch inputRef={useAltGetHit} />} label="top unmarked?" />
         </div>
 
         <div className="instructions">
