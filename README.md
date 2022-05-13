@@ -1,4 +1,4 @@
-# CausalQWApp
+# 🧌 CausalQWApp
 
 A quick frontend used to help verify stage 1 hits from MTurk. 
 
