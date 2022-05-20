@@ -129,8 +129,9 @@ function App() {
           },
           body: JSON.stringify(body),
         },
-      );
+      ).then(() => getExplanation()).catch(() => handleError());
     };
+
     if (document.getElementById('stage1')) {
       submit('hit', {
         hit: {
@@ -144,7 +145,6 @@ function App() {
           validator_username: inputRef.current.value === '' ? 'guest' : inputRef.current.value,
         },
       });
-      getExplanation();
     }
   };
 
