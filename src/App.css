@@ -23,3 +23,11 @@
     background-image: url('https://i.imgur.com/271IzUM.png');
     background-size: 100% 100%;
 }
+
+.stage-button {
+    cursor: pointer;
+}
+
+.stage-button:hover {
+    text-decoration: underline;
+}
