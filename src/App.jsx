@@ -108,8 +108,8 @@ function App() {
         const article_html = `<a href='${article_url}'>${article_url}</a>`;
         setArticle(article_html);
 
-        setWorkerHits(r.worker.hit_submits);
-        setWorkerStatus(r.worker.checked_status);
+        setWorkerHits(r.worker.explanation_submits);
+        setWorkerStatus(r.worker.bump2);
         setBadCount(r.worker.bad_s2_count);
         setGoodCount(r.worker.good_s2_count);
         setWorkerId(r.worker.id);
