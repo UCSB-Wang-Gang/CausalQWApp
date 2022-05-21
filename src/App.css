@@ -31,3 +31,13 @@
 .stage-button:hover {
     text-decoration: underline;
 }
+
+.MuiSwitch-thumb {
+    background-image: url('https://i.imgur.com/271IzUM.png') !important;
+    background-size: 100% 100% !important;
+}
+
+.MuiSwitch-track {
+    background-image: url('https://i.imgur.com/271IzUM.png') !important;
+    background-size: 100% 100% !important;
+}
