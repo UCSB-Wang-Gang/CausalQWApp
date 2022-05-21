@@ -8,7 +8,7 @@ export function MarkAllBtns(props) {
 
   function handleClick(id, wid, action) {
     // alert(`Worker: ${id}, Action: ${action}`);
-    fetch(`https://the.mturk.monster:50000/api/eval_all_s1_by/${id}/${action}`, { method: 'POST' });
+    fetch(`https://the.mturk.monster:50000/api/eval_all_s${props.stage}_by/${id}/${action}`, { method: 'POST' });
 
     if (action === 'bad') {
       // reject all also blocks worker
