@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { MarkAllBtns } from './components/MarkAllBtns';
 import { Navbar } from './components/Navbar';
+import { EditModal } from './components/EditModal';
 
 function App() {
   const [hitId, setHitId] = useState(-1);
@@ -24,6 +25,10 @@ function App() {
   const [worker_status, setWorkerStatus] = useState('worker_status');
   const [good_count, setGoodCount] = useState('good_count');
   const [bad_count, setBadCount] = useState('bad_count');
+
+  const [modalShow, setModalShow] = useState(false);
+  const [modalTitle, setModalTitle] = useState('Edit Modal');
+  const [modalEdits, setModalEdits] = useState('Modal Edits');
 
   const inputRef = useRef();
 
@@ -162,12 +167,70 @@ function App() {
     }
   };
 
+  const openEditModal = (title, ph) => {
+    if (hitId !== -1) {
+      if (stage === 2 && title !== 'explanation') return;
+      setModalShow(true);
+      setModalTitle(title);
+      setModalEdits(ph);
+    }
+  };
+
+  const submitEdits = (eStage, eId, eTitle, eValue) => {
+    const b = {};
+    if (eStage === 1) {
+      b.hit = { id: eId };
+      b.hit[eTitle] = eValue;
+    } else {
+      b.explanation = { id: eId };
+      b.explanation[eTitle] = eValue;
+    }
+
+    fetch(
+      `https://the.mturk.monster:50000/api/edit_${eStage === 1 ? 's1_hit' : 's2_exp'}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(b),
+      },
+    );
+
+    switch (eTitle) {
+      case 'cause':
+        setCause(eValue);
+        break;
+      case 'effect':
+        setEffect(eValue);
+        break;
+      case 'explanation':
+        setExplanation(eValue);
+        break;
+      case 'question':
+        setQuestion(eValue);
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
     <>
+      <EditModal
+        modalShow={modalShow}
+        setModalShow={setModalShow}
+        title={modalTitle}
+        value={modalEdits}
+        setValue={setModalEdits}
+        stage={stage}
+        id={hitId}
+        submitEdits={submitEdits}
+      />
       <Navbar setStage={setStage} getHit={getHit} getExplanation={getExplanation} />
       <Container>
         <Box style={{ padding: '80px' }}>
@@ -203,20 +266,20 @@ function App() {
             <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Article:</Typography>
             <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} dangerouslySetInnerHTML={{ __html: article }} />
             <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Cause:</Typography>
-            <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{cause}</Typography>
+            <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} onClick={() => openEditModal('cause', cause)}>{cause}</Typography>
             <Typography variant="subtitle1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Effect:</Typography>
-            <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }}>{effect}</Typography>
+            <Typography variant="body1" component="p" style={{ marginBottom: '0.5em' }} onClick={() => openEditModal('effect', effect)}>{effect}</Typography>
             {stage === 1
               ? (
                 <>
                   <Typography variant="subtitle1" id="stage1" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Question:</Typography>
-                  <Typography variant="body1" component="p" style={{ marginBottom: '1em' }}>{question}</Typography>
+                  <Typography variant="body1" component="p" style={{ marginBottom: '1em' }} onClick={() => openEditModal('question', question)}>{question}</Typography>
                 </>
               )
               : (
                 <>
                   <Typography variant="subtitle1" id="stage2" component="h1" style={{ marginBottom: '0.5em', fontWeight: 'bold' }}>Explanation:</Typography>
-                  <Typography variant="body1" component="p" style={{ marginBottom: '1em' }}>{explanation}</Typography>
+                  <Typography variant="body1" component="p" style={{ marginBottom: '1em' }} onClick={() => openEditModal('explanation', explanation)}>{explanation}</Typography>
                 </>
               )}
             <Accordion className="tony" style={{ marginBottom: '5vh' }} expanded={expanded} onClick={() => setExpanded(!expanded)}>
