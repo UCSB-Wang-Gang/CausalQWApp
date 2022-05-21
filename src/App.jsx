@@ -118,6 +118,14 @@ function App() {
       .catch(() => { handleError(); });
   };
 
+  const getNext = () => {
+    if (document.getElementById('stage1')) {
+      getHit();
+    } else if (document.getElementById('stage2')) {
+      getExplanation();
+    }
+  };
+
   const handleSubmit = (r) => {
     const submit = (ep, body) => {
       fetch(
@@ -129,7 +137,7 @@ function App() {
           },
           body: JSON.stringify(body),
         },
-      ).then(() => getExplanation()).catch(() => handleError());
+      ).then(() => getNext()).catch(() => handleError());
     };
 
     if (document.getElementById('stage1')) {
