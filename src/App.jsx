@@ -129,7 +129,7 @@ function App() {
           },
           body: JSON.stringify(body),
         },
-      ).then(() => getExplanation()).catch(() => handleError());
+      ).then(() => { if (document.getElementById('stage1')) { getHit(); } else { getExplanation(); } }).catch(() => handleError());
     };
 
     if (document.getElementById('stage1')) {
@@ -138,7 +138,6 @@ function App() {
           validator_username: inputRef.current.value === '' ? 'guest' : inputRef.current.value,
         },
       });
-      getHit();
     } else if (document.getElementById('stage2')) {
       submit('explanation', {
         explanation: {
@@ -228,7 +227,7 @@ function App() {
                 <Typography variant="body1" component="p" dangerouslySetInnerHTML={{ __html: passage }} />
               </AccordionDetails>
             </Accordion>
-            <MarkAllBtns mturkId={mturk_id} workerId={worker_id} />
+            <MarkAllBtns stage={stage} mturkId={mturk_id} workerId={worker_id} />
           </Box>
 
         </Box>
