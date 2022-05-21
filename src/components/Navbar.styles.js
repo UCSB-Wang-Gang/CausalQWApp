@@ -7,9 +7,10 @@ export const Bar = styled.div`
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   width: 100%;
   position:fixed;
+  background-color: white;
   background-image: url('https://i.imgur.com/271IzUM.png');
   background-size: 100% 100%;
-  z-index: 1;
+  z-index: 1000;
   font-family: "Poppins", sans-serif;
   font-weight: bold;
 `;
