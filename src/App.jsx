@@ -169,7 +169,6 @@ function App() {
 
   const openEditModal = (title, ph) => {
     if (hitId !== -1) {
-      if (stage === 2 && title !== 'explanation') return;
       setModalShow(true);
       setModalTitle(title);
       setModalEdits(ph);
