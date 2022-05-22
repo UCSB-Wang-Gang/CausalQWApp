@@ -20,7 +20,7 @@ export function MarkAllBtns(props) {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Stack spacing={4}>
         <Stack spacing={2} direction="row">
-          <Button className="tony" variant="outlined" color="info" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'good')}>
+          <Button className="tony" variant="outlined" color="info" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'ok')}>
             Approve all HITs by worker
           </Button>
           <Button className="tony" variant="outlined" color="error" disabled={workerEval} onClick={() => handleClick(props.workerId, props.mturkId, 'bad')}>
